@@ -2,6 +2,7 @@ import { serve } from 'bun';
 import { initDatabase } from './config/database';
 import { authRoutes } from './routes/auth.routes';
 import { userRoutes } from './routes/user.routes';
+import { join } from 'path';
 
 // Try to initialize database but don't fail if it's not available
 try {
@@ -12,7 +13,20 @@ try {
 }
 
 const routes = {
-    '/': (_request: Request) => new Response('Welcome to NetPass API!'),
+    '/': async (_request: Request) => {
+        const htmlPath = join(process.cwd(), 'public', 'index.html');
+        const file = Bun.file(htmlPath);
+        
+        if (await file.exists()) {
+            return new Response(file, {
+                headers: {
+                    'Content-Type': 'text/html; charset=utf-8'
+                }
+            });
+        }
+        
+        return new Response('Welcome to NetPass API!');
+    },
     '/version': (_request: Request) => new Response(`1.0.0/core-${Bun.version}`),
     ...authRoutes,
     ...userRoutes,
@@ -27,6 +41,7 @@ const server = serve({
         const url = new URL(request.url);
         const path = url.pathname;
         
+        // Check for routes first
         for (const [routePath, handler] of Object.entries(routes)) {
             if (routePath.endsWith('*')) {
                 const baseRoute = routePath.slice(0, -1);
@@ -45,6 +60,16 @@ const server = serve({
                         return methodHandler(request);
                     }
                 }
+            }
+        }
+        
+        // Try to serve static files from public folder
+        if (path !== '/' && !path.startsWith('/api')) {
+            const filePath = join(process.cwd(), 'public', path);
+            const file = Bun.file(filePath);
+            
+            if (await file.exists()) {
+                return new Response(file);
             }
         }
         
