@@ -1,0 +1,46 @@
+version: 3
+
+silent: true
+
+dotenv: ['.env', '{{.ENV}}/.env', '{{.HOME}}/.env']
+
+tasks:
+  dev:
+    desc: Run the development server
+    cmds:
+      - echo "Starting development server..."
+      - bun run src/index.ts
+  
+  build:
+    desc: Build the application
+    cmds:
+      - echo "Building NetPass API..."
+      - bun build src/index.ts --outdir dist --target=bun
+  
+  test:
+    desc: Run API tests
+    cmds:
+      - echo "Running API tests..."
+      - hurl --test tests/api/*.hurl
+  
+  test:auth:
+    desc: Run authentication tests
+    cmds:
+      - hurl --test tests/api/auth.hurl
+  
+  test:user:
+    desc: Run user tests
+    cmds:
+      - hurl --test tests/api/user.hurl
+  
+  db:init:
+    desc: Initialize database
+    cmds:
+      - echo "Initializing database..."
+      - bun run src/scripts/init-db.ts
+  
+  db:check:
+    desc: Check database connection
+    cmds:
+      - echo "Connecting using {{.ARANGO_USERNAME}}"
+      - bun run src/scripts/check-db.ts
