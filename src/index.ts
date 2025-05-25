@@ -4,6 +4,7 @@ import { authRoutes } from './routes/auth.routes';
 import { userRoutes } from './routes/user.routes';
 import { corsMiddleware, addCorsHeaders } from './middleware/cors.middleware';
 import { join } from 'path';
+import { authService } from './services/auth.service';
 
 // Try to initialize database but don't fail if it's not available
 try {
@@ -104,3 +105,13 @@ const server = serve({
 });
 
 console.log(`NetPass API listening on ${server.hostname}:${server.port}`);
+
+// Schedule session cleanup to run every hour
+setInterval(async () => {
+    try {
+        const deleted = await authService.cleanupExpiredSessions();
+        console.log(`Session cleanup: removed ${deleted} expired sessions`);
+    } catch (error) {
+        console.error('Session cleanup failed:', error);
+    }
+}, 60 * 60 * 1000); // Run every hour

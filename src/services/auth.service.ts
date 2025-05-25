@@ -166,3 +166,5 @@ export class AuthService {
         return deletedSessions.length;
     }
 }
+
+export const authService = new AuthService();

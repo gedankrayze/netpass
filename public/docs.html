@@ -648,26 +648,11 @@ const userData = await profile.json();</code></pre>
             <h3>Session Cleanup</h3>
             <p>Expired sessions are automatically cleaned up through:</p>
             <ul>
+                <li><strong>Built-in timer</strong>: Automatic cleanup runs every hour</li>
                 <li><strong>Opportunistic cleanup</strong>: 10% chance during each login request</li>
-                <li><strong>Manual cleanup</strong>: Run <code>bun run src/scripts/cleanup-sessions.ts</code></li>
-                <li><strong>ArangoDB Scheduled Tasks</strong>: Deploy the Foxx service for automatic cleanup (recommended)</li>
             </ul>
 
-            <h4>Using ArangoDB Foxx Service (Recommended)</h4>
-            <p>For production environments, use the included Foxx service for automatic scheduled cleanup:</p>
-            
-            <pre><code class="language-bash"># Install the Foxx service
-cd foxx-services/session-cleanup
-zip -r ../session-cleanup.zip .
-foxx install /netpass/session-cleanup ./session-cleanup.zip --database=netpass</code></pre>
-
-            <p>The service provides:</p>
-            <ul>
-                <li>Automatic hourly cleanup</li>
-                <li>REST endpoints for manual control</li>
-                <li>Session statistics monitoring</li>
-                <li>No external dependencies or cron jobs needed</li>
-            </ul>
+            <p>The built-in cleanup mechanism ensures optimal database performance by removing expired sessions regularly without requiring any external configuration or dependencies.</p>
 
             <h2 id="profile">Get User Profile</h2>
             <div class="endpoint">

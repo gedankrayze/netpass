@@ -181,7 +181,6 @@ docker-compose up -d
 - `bun run src/scripts/check-db.ts` - Check database connection
 - `bun run src/scripts/add-indexes.ts` - Add database indexes (if needed)
 - `bun run src/scripts/clear-test-data.ts` - Clear test users from database
-- `bun run src/scripts/cleanup-sessions.ts` - Remove expired sessions from database
 
 ## Project Structure
 
@@ -195,9 +194,6 @@ src/
 ├── services/       # Business logic
 ├── types/          # TypeScript type definitions
 └── utils/          # Utility functions
-
-foxx-services/
-└── session-cleanup/  # ArangoDB Foxx service for scheduled session cleanup
 ```
 
 ## Security Features
@@ -206,7 +202,7 @@ foxx-services/
 - Secure password hashing with bcrypt
 - Token-based authentication
 - Session expiration (configurable via JWT_TTL_DAYS environment variable)
-- Automatic session cleanup (opportunistic during login + manual script)
+- Automatic session cleanup (built-in hourly timer + opportunistic during login)
 - Unique constraints on email and username (enforced at database level)
 - Comprehensive input validation using Zod
 - Detailed validation error messages
@@ -215,32 +211,12 @@ foxx-services/
 
 ## Session Management
 
-NetPass handles expired sessions in three ways:
+NetPass handles expired sessions automatically:
 
-1. **Opportunistic Cleanup**: During login requests, there's a 10% chance of triggering background cleanup of expired sessions
-2. **Manual Cleanup**: Run `bun run src/scripts/cleanup-sessions.ts` to remove all expired sessions
-3. **ArangoDB Foxx Service**: Deploy the included Foxx service for automatic scheduled cleanup
+1. **Built-in Timer**: The application runs session cleanup every hour automatically
+2. **Opportunistic Cleanup**: During login requests, there's a 10% chance of triggering background cleanup of expired sessions
 
-### Using ArangoDB Scheduled Tasks (Recommended)
-
-The recommended approach for production is to use the included Foxx service:
-
-```bash
-# Navigate to the Foxx service directory
-cd foxx-services/session-cleanup
-
-# Create a zip file
-zip -r ../session-cleanup.zip .
-
-# Install via ArangoDB Web UI or CLI
-# Via CLI:
-foxx install /netpass/session-cleanup ./session-cleanup.zip --database=netpass
-```
-
-The Foxx service automatically schedules hourly cleanup and provides endpoints for:
-- Manual cleanup trigger: `POST /netpass/session-cleanup/cleanup`
-- Session statistics: `GET /netpass/session-cleanup/status`
-- Schedule management: `POST/DELETE /netpass/session-cleanup/schedule`
+Expired sessions are removed from the database to maintain optimal performance and security. The cleanup process runs in the background without affecting normal API operations.
 
 ## Example API Usage
 
