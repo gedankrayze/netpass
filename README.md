@@ -101,6 +101,67 @@ Build for production:
 task build
 ```
 
+## Docker
+
+### Building the Docker image
+
+```bash
+docker build -t netpass-api .
+```
+
+### Running with Docker
+
+```bash
+docker run -d \
+  --name netpass \
+  -p 3000:3000 \
+  -e DATABASE_URL=http://host.docker.internal:8529 \
+  -e DATABASE_NAME=netpass \
+  -e DATABASE_USER=root \
+  -e DATABASE_PASSWORD=yourpassword \
+  -e JWT_TTL_DAYS=7 \
+  netpass-api
+```
+
+### Using Docker Compose
+
+Create a `docker-compose.yml` file:
+
+```yaml
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=http://arangodb:8529
+      - DATABASE_NAME=netpass
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=yourpassword
+      - JWT_TTL_DAYS=7
+    depends_on:
+      - arangodb
+
+  arangodb:
+    image: arangodb:latest
+    ports:
+      - "8529:8529"
+    environment:
+      - ARANGO_ROOT_PASSWORD=yourpassword
+    volumes:
+      - arangodb_data:/var/lib/arangodb3
+
+volumes:
+  arangodb_data:
+```
+
+Then run:
+```bash
+docker-compose up -d
+```
+
 ## Project Structure
 
 ```
