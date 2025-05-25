@@ -195,6 +195,9 @@ src/
 ├── services/       # Business logic
 ├── types/          # TypeScript type definitions
 └── utils/          # Utility functions
+
+foxx-services/
+└── session-cleanup/  # ArangoDB Foxx service for scheduled session cleanup
 ```
 
 ## Security Features
@@ -212,16 +215,32 @@ src/
 
 ## Session Management
 
-NetPass handles expired sessions in two ways:
+NetPass handles expired sessions in three ways:
 
 1. **Opportunistic Cleanup**: During login requests, there's a 10% chance of triggering background cleanup of expired sessions
 2. **Manual Cleanup**: Run `bun run src/scripts/cleanup-sessions.ts` to remove all expired sessions
+3. **ArangoDB Foxx Service**: Deploy the included Foxx service for automatic scheduled cleanup
 
-For production environments, you can schedule the cleanup script to run periodically using cron:
+### Using ArangoDB Scheduled Tasks (Recommended)
+
+The recommended approach for production is to use the included Foxx service:
+
 ```bash
-# Run cleanup daily at 3 AM
-0 3 * * * cd /path/to/netpass && bun run src/scripts/cleanup-sessions.ts
+# Navigate to the Foxx service directory
+cd foxx-services/session-cleanup
+
+# Create a zip file
+zip -r ../session-cleanup.zip .
+
+# Install via ArangoDB Web UI or CLI
+# Via CLI:
+foxx install /netpass/session-cleanup ./session-cleanup.zip --database=netpass
 ```
+
+The Foxx service automatically schedules hourly cleanup and provides endpoints for:
+- Manual cleanup trigger: `POST /netpass/session-cleanup/cleanup`
+- Session statistics: `GET /netpass/session-cleanup/status`
+- Schedule management: `POST/DELETE /netpass/session-cleanup/schedule`
 
 ## Example API Usage
 
