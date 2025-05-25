@@ -41,6 +41,17 @@ cp .env.example .env
 task db:init
 ```
 
+## Environment Variables
+
+The following environment variables can be configured:
+
+- `DATABASE_URL` - ArangoDB connection URL (default: http://localhost:8529)
+- `DATABASE_NAME` - Database name (default: netpass)
+- `DATABASE_USER` - Database username (default: root)
+- `DATABASE_PASSWORD` - Database password
+- `JWT_TTL_DAYS` - JWT token expiration time in days (default: 7)
+- `PORT` - Server port (default: 3000)
+
 ## Development
 
 Run the development server with auto-reload:
@@ -109,7 +120,7 @@ src/
 - Password requirements: minimum 8 characters, uppercase, lowercase, and numbers
 - Secure password hashing with bcrypt
 - Token-based authentication
-- Session expiration (7 days by default)
+- Session expiration (configurable via JWT_TTL_DAYS environment variable)
 - Comprehensive input validation using Zod
 - Detailed validation error messages
 - Protection against common security vulnerabilities

@@ -124,12 +124,13 @@ export class AuthService {
     private async createSession(userId: string): Promise<Session> {
         const token = generateToken();
         const now = dayjs();
+        const ttlDays = parseInt(process.env.JWT_TTL_DAYS || '7', 10);
         
         const session: Session = {
             userId,
             token,
             createdAt: now.toISOString(),
-            expiresAt: now.add(7, 'days').toISOString()
+            expiresAt: now.add(ttlDays, 'days').toISOString()
         };
 
         const result = await this.sessionsCollection.save(session, { returnNew: true });
