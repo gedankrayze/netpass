@@ -43,6 +43,11 @@ cp .env.example .env
 task db:init
 ```
 
+This will:
+- Create the necessary collections (users, sessions)
+- Set up unique indexes on email and username fields
+- Add performance indexes for tokens and sessions
+
 ## Environment Variables
 
 The following environment variables can be configured:
@@ -170,12 +175,19 @@ Then run:
 docker-compose up -d
 ```
 
+## Utility Scripts
+
+- `bun run src/scripts/init-db.ts` - Initialize database collections and indexes
+- `bun run src/scripts/check-db.ts` - Check database connection
+- `bun run src/scripts/add-indexes.ts` - Add database indexes (if needed)
+- `bun run src/scripts/clear-test-data.ts` - Clear test users from database
+
 ## Project Structure
 
 ```
 src/
 ├── config/         # Database and app configuration
-├── middleware/     # Authentication and other middleware
+├── middleware/     # Authentication and CORS middleware
 ├── models/         # Data models and schemas
 ├── routes/         # API route handlers
 ├── scripts/        # Utility scripts
@@ -190,9 +202,11 @@ src/
 - Secure password hashing with bcrypt
 - Token-based authentication
 - Session expiration (configurable via JWT_TTL_DAYS environment variable)
+- Unique constraints on email and username (enforced at database level)
 - Comprehensive input validation using Zod
 - Detailed validation error messages
 - Protection against common security vulnerabilities
+- CORS configuration for secure cross-origin requests
 
 ## Example API Usage
 

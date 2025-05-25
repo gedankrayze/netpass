@@ -31,6 +31,21 @@ HTTP 409
 [Asserts]
 jsonpath "$.error" contains "Email already registered"
 
+# Test duplicate username
+POST http://localhost:3000/api/auth/signup
+Content-Type: application/json
+{
+    "email": "different@example.com",
+    "username": "testuser",
+    "password": "Test1234!",
+    "firstName": "Different",
+    "lastName": "User"
+}
+
+HTTP 409
+[Asserts]
+jsonpath "$.error" contains "Username already taken"
+
 # Test invalid email format
 POST http://localhost:3000/api/auth/signup
 Content-Type: application/json

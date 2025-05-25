@@ -445,11 +445,18 @@ cp .env.example .env
 
 # Configure your database connection in .env
 
-# Initialize the database
+# Initialize the database (creates collections and indexes)
 bun run src/scripts/init-db.ts
 
 # Start the development server
 bun run dev</code></pre>
+
+            <div class="alert alert-info">
+                <i data-lucide="info"></i>
+                <div>
+                    <strong>Database Initialization:</strong> The init script creates the necessary collections (users, sessions) and sets up unique indexes on email/username fields for data integrity and performance.
+                </div>
+            </div>
 
             <h2 id="configuration">Configuration</h2>
             <p>NetPass uses environment variables for configuration. Create a <code>.env</code> file in the root directory:</p>
@@ -523,13 +530,17 @@ const userData = await profile.json();</code></pre>
     "lastName": "Doe"
 }</code></pre>
 
-                <h4>Password Requirements</h4>
+                <h4>Validation Rules</h4>
                 <ul>
-                    <li>Minimum 8 characters</li>
-                    <li>At least one uppercase letter</li>
-                    <li>At least one lowercase letter</li>
-                    <li>At least one number</li>
+                    <li><strong>Email:</strong> Must be a valid email format and unique across all users</li>
+                    <li><strong>Username:</strong> 3-20 characters, alphanumeric and underscores only, must be unique</li>
+                    <li><strong>Password:</strong> Minimum 8 characters, at least one uppercase, one lowercase, and one number</li>
                 </ul>
+
+                <div class="alert alert-info">
+                    <i data-lucide="info"></i>
+                    <div>Both email and username uniqueness are enforced at the database level with unique indexes, preventing race conditions.</div>
+                </div>
 
                 <h4>Response</h4>
                 <pre><code class="language-json">{
