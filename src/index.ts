@@ -2,6 +2,7 @@ import { serve } from 'bun';
 import { initDatabase } from './config/database';
 import { authRoutes } from './routes/auth.routes';
 import { userRoutes } from './routes/user.routes';
+import { corsMiddleware, addCorsHeaders } from './middleware/cors.middleware';
 import { join } from 'path';
 
 // Try to initialize database but don't fail if it's not available
@@ -55,23 +56,32 @@ const server = serve({
         const url = new URL(request.url);
         const path = url.pathname;
         
+        // Handle CORS preflight requests
+        const corsResponse = corsMiddleware(request);
+        if (corsResponse) {
+            return corsResponse;
+        }
+        
         // Check for routes first
         for (const [routePath, handler] of Object.entries(routes)) {
             if (routePath.endsWith('*')) {
                 const baseRoute = routePath.slice(0, -1);
                 if (path.startsWith(baseRoute)) {
                     if (typeof handler === 'function') {
-                        return handler(request);
+                        const response = await handler(request);
+                        return addCorsHeaders(response, request);
                     }
                 }
             } else if (path === routePath) {
                 if (typeof handler === 'function') {
-                    return handler(request);
+                    const response = await handler(request);
+                    return addCorsHeaders(response, request);
                 } else if (typeof handler === 'object' && request.method in handler) {
                     const method = request.method as string;
                     const methodHandler = (handler as any)[method];
                     if (typeof methodHandler === 'function') {
-                        return methodHandler(request);
+                        const response = await methodHandler(request);
+                        return addCorsHeaders(response, request);
                     }
                 }
             }
@@ -83,11 +93,13 @@ const server = serve({
             const file = Bun.file(filePath);
             
             if (await file.exists()) {
-                return new Response(file);
+                const response = new Response(file);
+                return addCorsHeaders(response, request);
             }
         }
         
-        return new Response('Not found', { status: 404 });
+        const notFoundResponse = new Response('Not found', { status: 404 });
+        return addCorsHeaders(notFoundResponse, request);
     }
 });
 

@@ -9,8 +9,10 @@ A user management and authentication API built with Bun, TypeScript, and ArangoD
 - JWT-like token-based authentication
 - Session management
 - User profile endpoints with update capabilities
+- Custom user preferences storage
 - Password change functionality
 - Account deletion
+- CORS support for cross-origin requests
 - Input validation using Zod schemas
 - Detailed validation error messages
 - RESTful API design
@@ -51,6 +53,7 @@ The following environment variables can be configured:
 - `DATABASE_PASSWORD` - Database password
 - `JWT_TTL_DAYS` - JWT token expiration time in days (default: 7)
 - `ALLOW_SIGNUP` - Enable/disable new user registration (default: false, set to "true" to enable)
+- `CORS_ORIGINS` - Comma-separated list of allowed origins for CORS, or * for all (default: *)
 - `PORT` - Server port (default: 3000)
 
 ## Development
