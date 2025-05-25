@@ -14,6 +14,7 @@ export interface User {
         lastName?: string;
         avatar?: string;
     };
+    custom?: Record<string, any>;
 }
 
 export interface Session {

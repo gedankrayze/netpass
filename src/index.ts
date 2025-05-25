@@ -27,6 +27,20 @@ const routes = {
         
         return new Response('Welcome to NetPass API!');
     },
+    '/docs': async (_request: Request) => {
+        const docsPath = join(process.cwd(), 'public', 'docs.html');
+        const file = Bun.file(docsPath);
+        
+        if (await file.exists()) {
+            return new Response(file, {
+                headers: {
+                    'Content-Type': 'text/html; charset=utf-8'
+                }
+            });
+        }
+        
+        return new Response('Documentation not found', { status: 404 });
+    },
     '/version': (_request: Request) => new Response(`1.0.0/core-${Bun.version}`),
     ...authRoutes,
     ...userRoutes,

@@ -50,6 +50,7 @@ The following environment variables can be configured:
 - `DATABASE_USER` - Database username (default: root)
 - `DATABASE_PASSWORD` - Database password
 - `JWT_TTL_DAYS` - JWT token expiration time in days (default: 7)
+- `ALLOW_SIGNUP` - Enable/disable new user registration (default: false, set to "true" to enable)
 - `PORT` - Server port (default: 3000)
 
 ## Development

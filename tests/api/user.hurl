@@ -62,6 +62,28 @@ HTTP 400
 jsonpath "$.message" == "Validation failed"
 jsonpath "$.errors.avatar" exists
 
+# Test update profile with custom preferences
+PATCH http://localhost:3000/api/users/profile
+Authorization: Bearer {{token}}
+Content-Type: application/json
+{
+    "custom": {
+        "theme": "dark",
+        "language": "en",
+        "notifications": {
+            "email": true,
+            "push": false
+        }
+    }
+}
+
+HTTP 200
+[Asserts]
+jsonpath "$.custom.theme" == "dark"
+jsonpath "$.custom.language" == "en"
+jsonpath "$.custom.notifications.email" == true
+jsonpath "$.custom.notifications.push" == false
+
 # Test change password
 POST http://localhost:3000/api/users/change-password
 Authorization: Bearer {{token}}

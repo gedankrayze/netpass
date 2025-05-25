@@ -26,13 +26,27 @@ export class UserService {
             throw new ApiError('User not found', 404);
         }
 
-        const updatedUser = await this.usersCollection.update(userId, {
-            profile: {
-                ...user.profile,
-                ...data
-            },
+        const { custom, ...profileData } = data;
+        
+        const updatePayload: any = {
             updatedAt: dayjs().toISOString()
-        }, { returnNew: true });
+        };
+        
+        if (Object.keys(profileData).length > 0) {
+            updatePayload.profile = {
+                ...user.profile,
+                ...profileData
+            };
+        }
+        
+        if (custom !== undefined) {
+            updatePayload.custom = {
+                ...user.custom,
+                ...custom
+            };
+        }
+
+        const updatedUser = await this.usersCollection.update(userId, updatePayload, { returnNew: true });
 
         const { password, ...userWithoutPassword } = updatedUser.new!;
         return userWithoutPassword;

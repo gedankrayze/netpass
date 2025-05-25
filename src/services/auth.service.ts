@@ -10,6 +10,12 @@ export class AuthService {
     private sessionsCollection = db.collection<Session>(collections.sessions);
 
     async signup(data: SignupInput): Promise<AuthResponse> {
+        // Check if signup is allowed
+        const allowSignup = process.env.ALLOW_SIGNUP === 'true';
+        if (!allowSignup) {
+            throw new ApiError('New user registration is currently disabled', 403);
+        }
+
         const existingEmail = await db.query({
             query: 'FOR u IN users FILTER u.email == @email RETURN u',
             bindVars: { email: data.email }
@@ -42,7 +48,8 @@ export class AuthService {
             profile: {
                 firstName: data.firstName,
                 lastName: data.lastName
-            }
+            },
+            custom: {}
         };
 
         const result = await this.usersCollection.save(user, { returnNew: true });
