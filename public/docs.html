@@ -645,6 +645,17 @@ const userData = await profile.json();</code></pre>
                 <div>Token expiration can be configured using the <code>JWT_TTL_DAYS</code> environment variable.</div>
             </div>
 
+            <h3>Session Cleanup</h3>
+            <p>Expired sessions are automatically cleaned up through:</p>
+            <ul>
+                <li><strong>Opportunistic cleanup</strong>: 10% chance during each login request</li>
+                <li><strong>Manual cleanup</strong>: Run <code>bun run src/scripts/cleanup-sessions.ts</code></li>
+                <li><strong>Scheduled cleanup</strong>: Set up a cron job for periodic cleanup</li>
+            </ul>
+
+            <pre><code class="language-bash"># Example cron job for daily cleanup at 3 AM
+0 3 * * * cd /path/to/netpass && bun run src/scripts/cleanup-sessions.ts</code></pre>
+
             <h2 id="profile">Get User Profile</h2>
             <div class="endpoint">
                 <div class="endpoint-header">

@@ -66,6 +66,13 @@ export class AuthService {
     }
 
     async login(data: LoginInput): Promise<AuthResponse> {
+        // Opportunistic cleanup: Clean expired sessions 10% of the time
+        if (Math.random() < 0.1) {
+            this.cleanupExpiredSessions().catch(err => 
+                console.error('Background session cleanup failed:', err)
+            );
+        }
+
         const query = await db.query<User>({
             query: 'FOR u IN users FILTER u.username == @username OR u.email == @username RETURN u',
             bindVars: { username: data.username }
@@ -142,5 +149,20 @@ export class AuthService {
 
         const result = await this.sessionsCollection.save(session, { returnNew: true });
         return result.new!;
+    }
+
+    async cleanupExpiredSessions(): Promise<number> {
+        const now = dayjs().toISOString();
+        
+        const result = await db.query(
+            `FOR s IN sessions 
+             FILTER s.expiresAt < @now 
+             REMOVE s IN sessions 
+             RETURN OLD`,
+            { now }
+        );
+        
+        const deletedSessions = await result.all();
+        return deletedSessions.length;
     }
 }

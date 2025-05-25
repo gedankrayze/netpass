@@ -181,6 +181,7 @@ docker-compose up -d
 - `bun run src/scripts/check-db.ts` - Check database connection
 - `bun run src/scripts/add-indexes.ts` - Add database indexes (if needed)
 - `bun run src/scripts/clear-test-data.ts` - Clear test users from database
+- `bun run src/scripts/cleanup-sessions.ts` - Remove expired sessions from database
 
 ## Project Structure
 
@@ -202,11 +203,25 @@ src/
 - Secure password hashing with bcrypt
 - Token-based authentication
 - Session expiration (configurable via JWT_TTL_DAYS environment variable)
+- Automatic session cleanup (opportunistic during login + manual script)
 - Unique constraints on email and username (enforced at database level)
 - Comprehensive input validation using Zod
 - Detailed validation error messages
 - Protection against common security vulnerabilities
 - CORS configuration for secure cross-origin requests
+
+## Session Management
+
+NetPass handles expired sessions in two ways:
+
+1. **Opportunistic Cleanup**: During login requests, there's a 10% chance of triggering background cleanup of expired sessions
+2. **Manual Cleanup**: Run `bun run src/scripts/cleanup-sessions.ts` to remove all expired sessions
+
+For production environments, you can schedule the cleanup script to run periodically using cron:
+```bash
+# Run cleanup daily at 3 AM
+0 3 * * * cd /path/to/netpass && bun run src/scripts/cleanup-sessions.ts
+```
 
 ## Example API Usage
 
