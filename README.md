@@ -47,10 +47,10 @@ task db:init
 
 The following environment variables can be configured:
 
-- `DATABASE_URL` - ArangoDB connection URL (default: http://localhost:8529)
-- `DATABASE_NAME` - Database name (default: netpass)
-- `DATABASE_USER` - Database username (default: root)
-- `DATABASE_PASSWORD` - Database password
+- `ARANGO_URL` - ArangoDB connection URL (default: http://localhost:8529)
+- `ARANGO_DB` - Database name (default: netpass)
+- `ARANGO_USERNAME` - Database username (default: root)
+- `ARANGO_PASSWORD` - Database password
 - `JWT_TTL_DAYS` - JWT token expiration time in days (default: 7)
 - `ALLOW_SIGNUP` - Enable/disable new user registration (default: false, set to "true" to enable)
 - `CORS_ORIGINS` - Comma-separated list of allowed origins for CORS, or * for all (default: *)
@@ -119,11 +119,13 @@ docker build -t netpass-api .
 docker run -d \
   --name netpass \
   -p 3000:3000 \
-  -e DATABASE_URL=http://host.docker.internal:8529 \
-  -e DATABASE_NAME=netpass \
-  -e DATABASE_USER=root \
-  -e DATABASE_PASSWORD=yourpassword \
+  -e ARANGO_URL=http://host.docker.internal:8529 \
+  -e ARANGO_DB=netpass \
+  -e ARANGO_USERNAME=root \
+  -e ARANGO_PASSWORD=yourpassword \
   -e JWT_TTL_DAYS=7 \
+  -e ALLOW_SIGNUP=true \
+  -e CORS_ORIGINS=* \
   netpass-api
 ```
 
@@ -140,11 +142,13 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - DATABASE_URL=http://arangodb:8529
-      - DATABASE_NAME=netpass
-      - DATABASE_USER=root
-      - DATABASE_PASSWORD=yourpassword
+      - ARANGO_URL=http://arangodb:8529
+      - ARANGO_DB=netpass
+      - ARANGO_USERNAME=root
+      - ARANGO_PASSWORD=yourpassword
       - JWT_TTL_DAYS=7
+      - ALLOW_SIGNUP=true
+      - CORS_ORIGINS=*
     depends_on:
       - arangodb
 

@@ -455,16 +455,19 @@ bun run dev</code></pre>
             <p>NetPass uses environment variables for configuration. Create a <code>.env</code> file in the root directory:</p>
 
             <pre><code class="language-bash"># Database configuration
-DATABASE_URL=http://localhost:8529
-DATABASE_NAME=netpass
-DATABASE_USER=root
-DATABASE_PASSWORD=yourpassword
+ARANGO_URL=http://localhost:8529
+ARANGO_DB=netpass
+ARANGO_USERNAME=root
+ARANGO_PASSWORD=yourpassword
 
 # JWT configuration
 JWT_TTL_DAYS=7
 
 # Authentication configuration
 ALLOW_SIGNUP=true
+
+# CORS configuration
+CORS_ORIGINS=*
 
 # Server configuration
 PORT=3000</code></pre>
@@ -809,22 +812,22 @@ const response = await fetch('/api/users/profile', {
                 </thead>
                 <tbody>
                     <tr>
-                        <td><code>DATABASE_URL</code></td>
+                        <td><code>ARANGO_URL</code></td>
                         <td>ArangoDB connection URL</td>
                         <td>http://localhost:8529</td>
                     </tr>
                     <tr>
-                        <td><code>DATABASE_NAME</code></td>
+                        <td><code>ARANGO_DB</code></td>
                         <td>Database name</td>
                         <td>netpass</td>
                     </tr>
                     <tr>
-                        <td><code>DATABASE_USER</code></td>
+                        <td><code>ARANGO_USERNAME</code></td>
                         <td>Database username</td>
                         <td>root</td>
                     </tr>
                     <tr>
-                        <td><code>DATABASE_PASSWORD</code></td>
+                        <td><code>ARANGO_PASSWORD</code></td>
                         <td>Database password</td>
                         <td>-</td>
                     </tr>
